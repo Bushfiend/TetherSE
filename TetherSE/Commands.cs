@@ -20,12 +20,15 @@ namespace TetherSE
 
         private static void Command(string message, ref bool sendToOthers)
         {
+            
+            if(!message.StartsWith("/tether", StringComparison.OrdinalIgnoreCase))
+            {         
+                return;
+            }
+
             sendToOthers = false;
 
-            if(message.StartsWith("/tether", StringComparison.OrdinalIgnoreCase))
-            {
-                GetTargetedBlock.GetPort();
-            }
+            GetTargetedBlock.GetPort();
 
 
         }
