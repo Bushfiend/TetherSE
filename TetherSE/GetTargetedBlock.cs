@@ -43,8 +43,28 @@ namespace TetherSE
 
                 List<IMyUseObject> useableObjects = new List<IMyUseObject>();
                 useObjectBase.GetInteractiveObjects(useableObjects);
+                var owned = false;
 
-                if(localplayer.GetRelationTo(terminalBlock.OwnerId) != MyRelationsBetweenPlayerAndBlock.Owner)
+                switch (localplayer.GetRelationTo(terminalBlock.OwnerId))
+                {
+                    case MyRelationsBetweenPlayerAndBlock.NoOwnership:
+                        owned = true;
+                        break;
+                    case MyRelationsBetweenPlayerAndBlock.Owner:
+                        owned = true;
+                        break;
+                    case MyRelationsBetweenPlayerAndBlock.FactionShare:
+                        owned = true;
+                        break;
+                    case MyRelationsBetweenPlayerAndBlock.Neutral:
+                        owned = true;
+                        break;
+                    case MyRelationsBetweenPlayerAndBlock.Enemies:
+                        break;
+                    case MyRelationsBetweenPlayerAndBlock.Friends:
+                        break;
+                }
+                if (!owned)
                 {
                     utils.ShowNotification("You do not own this block... Nice try.", 5000, "Red");
                     return;
