@@ -70,6 +70,11 @@ namespace TetherSE
                 DoGrinder();
                 return;
             }
+            if (equippedTool.Contains("Drill", StringComparison.OrdinalIgnoreCase))
+            {
+                DoDrill();
+                return;
+            }
         }
 
         public static void DoWelder(MyCharacter localPlayer)
@@ -93,7 +98,17 @@ namespace TetherSE
                 MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
             }
         }
-
+        public static void DoDrill()
+        {
+            var inventory = (MyInventory)GetTargetedBlock.selectedBlock.GetInventory();
+            foreach (var objectId in MySession.Static.LocalCharacter.GetInventory().GetItems())
+            {
+                if (!objectId.Content.GetObjectId().ToString().ToLower().Contains("ore")) continue;
+                MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10000;
+                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory, objectId.Content.GetObjectId(), MyItemFlags.None, objectId.Amount);
+                MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
+            }
+        }
         public static int ticks = 0;
     }
 }
