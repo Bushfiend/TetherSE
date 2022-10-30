@@ -6,6 +6,7 @@ using System.Text;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
+using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using VRage.Game.Entity;
@@ -13,6 +14,7 @@ using VRage.Game.ModAPI;
 using Sandbox.Game.Entities.Inventory;
 using Sandbox.Game.Weapons;
 using VRage.Game;
+using VRage.Game.ModAPI.Ingame;
 using VRageMath;
 
 
@@ -93,11 +95,19 @@ namespace TetherSE
                 if (!objectId.Content.GetObjectId().ToString().ToLower().Contains("ore") &&
                     !objectId.Content.GetObjectId().ToString().ToLower().Contains("ingot") &&
                     !objectId.Content.GetObjectId().ToString().ToLower().Contains("component")) continue;
-                MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10000;
-                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory, objectId.Content.GetObjectId(), MyItemFlags.None, objectId.Amount);
-                MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
+
+                foreach (var block in (MySession.Static.ControlledGrid).GetFatBlocks().OfType<MyTerminalBlock>())
+                {
+                    if (!block.HasInventory) continue;
+                    var invent = block.GetInventory();
+                    if (!invent.CanItemsBeAdded(objectId.Amount, objectId.GetDefinitionId())) continue;
+                    MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10000;
+                    MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), invent, objectId.Content.GetObjectId(), MyItemFlags.None, objectId.Amount);
+                    MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
+                }
             }
         }
+
         public static void DoDrill()
         {
             var inventory = (MyInventory)GetTargetedBlock.selectedBlock.GetInventory();
