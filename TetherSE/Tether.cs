@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -88,25 +88,43 @@ namespace TetherSE
         public static void DoGrinder()
         {
             var inventory = (MyInventory)GetTargetedBlock.selectedBlock.GetInventory();
+            var toRemove = new List<MyPhysicalInventoryItem>();
+            
             foreach (var objectId in MySession.Static.LocalCharacter.GetInventory().GetItems())
             {
                 if (!objectId.Content.GetObjectId().ToString().ToLower().Contains("ore") &&
                     !objectId.Content.GetObjectId().ToString().ToLower().Contains("ingot") &&
                     !objectId.Content.GetObjectId().ToString().ToLower().Contains("component")) continue;
+                
                 MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10000;
-                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory, objectId.Content.GetObjectId(), MyItemFlags.None, objectId.Amount);
+                
+                toRemove.Add(objectId);
                 MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
+            }
+
+            foreach (var item in toRemove)
+            {
+                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory,
+                    item.Content.GetObjectId(), MyItemFlags.None, item.Amount);
             }
         }
         public static void DoDrill()
         {
             var inventory = (MyInventory)GetTargetedBlock.selectedBlock.GetInventory();
+            var toRemove = new List<MyPhysicalInventoryItem>();
+
             foreach (var objectId in MySession.Static.LocalCharacter.GetInventory().GetItems())
             {
                 if (!objectId.Content.GetObjectId().ToString().ToLower().Contains("ore")) continue;
                 MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10000;
-                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory, objectId.Content.GetObjectId(), MyItemFlags.None, objectId.Amount);
+                toRemove.Add(objectId);
                 MyConstants.DEFAULT_INTERACTIVE_DISTANCE = 10;
+            }
+
+            foreach (var item in toRemove)
+            {
+                MyInventory.TransferByPlanner(MySession.Static.LocalCharacter.GetInventory(), inventory,
+                    item.Content.GetObjectId(), MyItemFlags.None, item.Amount);
             }
         }
         public static int ticks = 0;
